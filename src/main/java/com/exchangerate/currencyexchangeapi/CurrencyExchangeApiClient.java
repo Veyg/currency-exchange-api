@@ -1,11 +1,13 @@
 package com.exchangerate.currencyexchangeapi;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class CurrgencyExchangeApiClient {
+public class CurrencyExchangeApiClient {
     private String apiUrl;
     private String apiKey;
 
@@ -16,7 +18,7 @@ public class CurrgencyExchangeApiClient {
 
     public double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
-            String requestUrl = apiUrl + "?base=" + baseCurrency + "&symbols=" + targetCurrency;
+            String requestUrl = apiUrl + "latest.json?app_id=" + apiKey;
 
             URL url = new URL(requestUrl);
 
@@ -55,11 +57,9 @@ public class CurrgencyExchangeApiClient {
     private double parseExchangeRateFromResponse(String response, String targetCurrency) {
         double exchangeRate = 0.0;
         try {
-            String rateKey = "\"" + targetCurrency + "\"";
-            int startIndex = response.indexOf(rateKey) + rateKey.length();
-            int endIndex = response.indexOf(",", startIndex);
-            String rateValue = response.substring(startIndex, endIndex).trim();
-            exchangeRate = Double.parseDouble(rateValue);
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONObject rates = jsonResponse.getJSONObject("rates");
+            exchangeRate = rates.getDouble(targetCurrency);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,13 +67,10 @@ public class CurrgencyExchangeApiClient {
     }
 
     public static void main(String[] args) {
-        // Create an instance of CurrencyExchangeApiClient
-        CurrencyExchangeApiClient client = new CurrencyExchangeApiClient("your-api-url", "your-api-key");
+        CurrencyExchangeApiClient client = new CurrencyExchangeApiClient("https://openexchangerates.org/api/", "your-api-key");
 
-        // Call the getExchangeRate method to perform currency exchange
         double exchangeRate = client.getExchangeRate("base-currency", "target-currency");
 
-        // Print the exchange rate
         System.out.println("Exchange rate: " + exchangeRate);
     }
 }
