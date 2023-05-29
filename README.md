@@ -28,6 +28,12 @@ The Currency Converter API is a RESTful API that allows users to convert currenc
     mvnw clean package
 4. Run the application:
     ```bash
+=======
+   ```bash
+    ./mvnw clean package
+4. Run the application:
+   ```bash
+    ee4ce8c07f55a32d4720d8b2c19031d32ff2ac24
     java -jar target/currency-converter-api.jar
 ## Usage
 
