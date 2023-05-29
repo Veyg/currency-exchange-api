@@ -18,18 +18,17 @@ The Currency Converter API is a RESTful API that allows users to convert currenc
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/currency-converter-api.git```
+   git clone https://github.com/your-username/currency-converter-api.git
 2. Navigate to the project directory:
     ```bash
     Copy code
     cd currency-converter-api
 3. Build the project:
-```bash
-    ./mvnw clean package
+    ```bash
+    mvnw clean package
 4. Run the application:
-```bash
+    ```bash
     java -jar target/currency-converter-api.jar
-
 ## Usage
 
 The Currency Converter API provides the following endpoints:
