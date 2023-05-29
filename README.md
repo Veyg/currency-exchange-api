@@ -18,7 +18,7 @@ The Currency Converter API is a RESTful API that allows users to convert currenc
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/currency-converter-api.git
+git clone https://github.com/Veyg/currency-converter-api.git
 ```
 
 2. Navigate to the project directory:
