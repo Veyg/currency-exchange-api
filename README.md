@@ -62,6 +62,3 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 ## License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-```
-
-Feel free to copy and paste this formatted text into your README file.
