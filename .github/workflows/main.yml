@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          node-version: '16'
 
       - name: Set up Java
         uses: actions/setup-java@v2
@@ -29,9 +31,11 @@ jobs:
 
     steps:
       - name: SSH into Server
-        uses: webfactory/ssh-agent@v0.5.2
+        uses: appleboy/ssh-action@master
         with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          host: <your-server-hostname>
+          username: <your-ssh-username>
+          key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
 
       - name: Deploy to server
         run: |
