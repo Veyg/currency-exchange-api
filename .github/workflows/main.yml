@@ -33,14 +33,14 @@ jobs:
       - name: SSH into Server
         uses: appleboy/ssh-action@master
         with:
-          host: <your-server-hostname>
-          username: <your-ssh-username>
+          host: ec2-13-51-177-72.eu-north-1.compute.amazonaws.com
+          username: ec2-user
           key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
 
       - name: Deploy to server
         run: |
-          # Add commands to deploy your application to the server here
-          # Use the API key from GitHub secrets
           export API_KEY=$API_KEY
-          # Run your application using the API key
-          java -jar your-application.jar --api.key=$API_KEY
+          git clone https://github.com/Veyg/currency-exchange-api.git
+          cd currency-exchange-api
+          ./mvnw clean package
+          java -jar target/currency-exchange-api.jar --api.key=$API_KEY
