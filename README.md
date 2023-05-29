@@ -26,4 +26,27 @@ The Currency Converter API is a RESTful API that allows users to convert currenc
 3. Build the project:
 ```bash
     ./mvnw clean package
-```
+4. Run the application:
+```bash
+    java -jar target/currency-converter-api.jar
+
+## Usage
+
+The Currency Converter API provides the following endpoints:
+
+- `/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}` - Converts the specified amount from the base currency to the target currency.
+
+Make sure to replace `{baseCurrency}`, `{targetCurrency}`, and `{amount}` with the appropriate values.
+
+## Configuration
+
+The API requires an API key to access the Open Exchange Rates API. Please obtain an API key from the Open Exchange Rates website and update the `application.properties` file with your API key:
+
+
+## Contributing
+
+Contributions are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
