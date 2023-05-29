@@ -24,10 +24,10 @@ The Currency Converter API is a RESTful API that allows users to convert currenc
     Copy code
     cd currency-converter-api
 3. Build the project:
-```bash
+   ```bash
     ./mvnw clean package
 4. Run the application:
-```bash
+   ```bash
     java -jar target/currency-converter-api.jar
 
 ## Usage
