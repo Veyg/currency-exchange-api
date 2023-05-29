@@ -47,6 +47,8 @@ The Currency Converter API provides the following endpoints:
 
 Make sure to replace `{baseCurrency}`, `{targetCurrency}`, and `{amount}` with the appropriate values.
 
+For detailed information about the API endpoints and request/response examples, please refer to the [API Documentation](API_DOCUMENTATION.md).
+
 ## Configuration
 
 The API requires an API key to access the Open Exchange Rates API. Please obtain an API key from the Open Exchange Rates website and update the `application.properties` file with your API key:
