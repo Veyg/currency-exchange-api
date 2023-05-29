@@ -2,32 +2,41 @@ package com.exchangerate.currencyexchangeapi;
 
 import org.json.JSONObject;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 
 public class CurrencyExchangeApiClient {
     private String apiUrl;
     private String apiKey;
 
-    public CurrencyExchangeApiClient(String apiUrl, String apiKey) {
-        this.apiUrl = apiUrl;
-        this.apiKey = apiKey;
+    public CurrencyExchangeApiClient(String apiUrl, String secretFile) {
+        this.apiUrl = "https://openexchangerates.org/api/";
+        this.apiKey = loadApiKeyFromSecret(secretFile);
+    }
+
+    private String loadApiKeyFromSecret (String secretFile){
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(secretFile));
+            return properties.getProperty("api.key");
+        } catch (Exception e) {
+            System.out.println("Failed to load API key from config file: " + e.getMessage());
+            return null;
+        }
     }
 
     public double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
-            String requestUrl = apiUrl + "latest.json?app_id=" + apiKey;
+            String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
 
             URL url = new URL(requestUrl);
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
-
-            if (apiKey != null && !apiKey.isEmpty()) {
-                connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-            }
 
             int responseCode = connection.getResponseCode();
 
@@ -64,12 +73,12 @@ public class CurrencyExchangeApiClient {
         }
         return exchangeRate;
     }
+    
 
     public static void main(String[] args) {
-        CurrencyExchangeApiClient client = new CurrencyExchangeApiClient("https://openexchangerates.org/api/", "your-api-key");
+        CurrencyExchangeApiClient client = new CurrencyExchangeApiClient("https://openexchangerates.org/api/", "src/main/java/com/exchangerate/currencyexchangeapi/secrets.properties");
 
-        double exchangeRate = client.getExchangeRate("base-currency", "target-currency");
-
+        double exchangeRate = client.getExchangeRate("USD", "EUR");
         System.out.println("Exchange rate: " + exchangeRate);
     }
 }
