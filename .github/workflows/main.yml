@@ -43,4 +43,4 @@ jobs:
           git clone https://github.com/Veyg/currency-exchange-api.git
           cd currency-exchange-api
           ./mvnw clean package
-          java -jar target/currency-exchange-api.jar --api.key=$API_KEY
+          java -jar target/currency-exchange-a.jar --api.key=$API_KEY
