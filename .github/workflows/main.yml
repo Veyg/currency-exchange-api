@@ -16,7 +16,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          distrinution: 'adopt'
+          distribution: 'adopt'
           java-version: '17'
 
       - name: Build and test
