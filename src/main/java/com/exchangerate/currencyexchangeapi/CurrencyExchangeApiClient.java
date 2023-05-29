@@ -1,45 +1,42 @@
 package com.exchangerate.currencyexchangeapi;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 
+@Service
 public class CurrencyExchangeApiClient {
     private String apiUrl;
     private String apiKey;
 
-    public CurrencyExchangeApiClient(String apiUrl, String secretFile) {
-        this.apiUrl = "https://openexchangerates.org/api/";
+    public CurrencyExchangeApiClient(@Value("${api.url}") String apiUrl, @Value("${secret.file}") String secretFile) {
+        this.apiUrl = apiUrl;
         this.apiKey = loadApiKeyFromSecret(secretFile);
     }
 
-    private String loadApiKeyFromSecret (String secretFile){
+    private String loadApiKeyFromSecret(String secretFile) {
         try {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(secretFile));
+            properties.load(new ClassPathResource(secretFile).getInputStream());
             return properties.getProperty("api.key");
         } catch (Exception e) {
-            System.out.println("Failed to load API key from config file: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
     }
 
     public double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
             String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
-
             URL url = new URL(requestUrl);
-
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
             connection.setRequestMethod("GET");
-
             int responseCode = connection.getResponseCode();
-
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
@@ -48,37 +45,22 @@ public class CurrencyExchangeApiClient {
                     response.append(line);
                 }
                 reader.close();
-                double exchangeRate = parseExchangeRateFromResponse(response.toString(), targetCurrency);
-
-                return exchangeRate;
+                return parseExchangeRateFromResponse(response.toString(), targetCurrency);
             } else {
-                System.out.println("Error: " + responseCode);
+                throw new RuntimeException("Error: " + responseCode);
             }
-            connection.disconnect();
-
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
+            throw new RuntimeException("Exception: " + e.getMessage(), e);
         }
-        return 0;
     }
 
     private double parseExchangeRateFromResponse(String response, String targetCurrency) {
-        double exchangeRate = 0.0;
         try {
             JSONObject jsonResponse = new JSONObject(response);
             JSONObject rates = jsonResponse.getJSONObject("rates");
-            exchangeRate = rates.getDouble(targetCurrency);
+            return rates.getDouble(targetCurrency);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to parse exchange rate from response: " + e.getMessage(), e);
         }
-        return exchangeRate;
-    }
-    
-
-    public static void main(String[] args) {
-        CurrencyExchangeApiClient client = new CurrencyExchangeApiClient("https://openexchangerates.org/api/", "src/main/java/com/exchangerate/currencyexchangeapi/secrets.properties");
-
-        double exchangeRate = client.getExchangeRate("USD", "EUR");
-        System.out.println("Exchange rate: " + exchangeRate);
     }
 }
