@@ -18,6 +18,7 @@ jobs:
         with:
           java-version: '17'
           java-package: 'jdk'
+          distribution: 'adopt'
 
       - name: Build and Package
         run: mvn clean package
