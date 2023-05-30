@@ -1,46 +1,33 @@
-name: CI/CD
+name: Deploy
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - created
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          node-version: '16'
 
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
           java-version: '17'
 
-      - name: Build and test
-        run: |
-          ./mvnw clean package
+      - name: Build and Package
+        run: mvn clean package
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: SSH into Server
+      - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
           host: ec2-13-49-66-210.eu-north-1.compute.amazonaws.com
           username: ec2-user
           key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
-
-      - name: Deploy to server
-        run: |
-          export API_KEY=$API_KEY
-          git clone https://github.com/Veyg/currency-exchange-api.git
-          cd currency-exchange-api
-          ./mvnw clean package
-          java -jar target/currency-exchange-a.jar --api.key=$API_KEY
+          script: |
+            ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'sudo systemctl stop currency-exchange-api-1.0.0.jar'
+            scp target/currency-exchange-api-1.0.0.jar ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com:currency-exchange-api-1.0.0.jar
+            ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'sudo systemctl start currency-exchange-api-1.0.0.jar'
