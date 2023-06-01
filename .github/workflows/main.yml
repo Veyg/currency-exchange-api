@@ -32,5 +32,5 @@ jobs:
           script: |
             ssh-keyscan -H ec2-13-49-66-210.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
             ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'sudo systemctl stop currency-exchange-api-1.0.0.jar'
-            scp target/currency-exchange-api-1.0.0.jar ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com:currency-exchange-api-1.0.0.jar
+            scp ${{ github.workspace }}/target/currency-exchange-api-1.0.0.jar ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com:currency-exchange-api-1.0.0.jar
             ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'sudo systemctl start currency-exchange-api-1.0.0.jar'
