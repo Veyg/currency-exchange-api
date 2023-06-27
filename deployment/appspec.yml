@@ -4,6 +4,9 @@ files:
   - source: scripts/
     destination: /opt/currency-exchange-api/scripts/
     overwrite: true
+  - source: currency-exchange-api.jar
+    destination: /opt/currency-exchange-api/currency-exchange-api.jar
+    overwrite: true
 permissions:
   - object: /
     pattern: "**"
