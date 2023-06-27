@@ -60,4 +60,8 @@ jobs:
       - name: Create Deployment
         run: |
           echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
-          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+          aws deploy create-deployment \
+            --application-name ${{ env.CODEDEPLOY_APPLICATION }} \
+            --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} \
+            --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD),fileExistsBehavior=OVERWRITE \
+            --ignore-application-stop-failures
