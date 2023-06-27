@@ -27,21 +27,13 @@ jobs:
           java-package: 'jdk'
 
       - name: Build and Package Maven
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/
         run: |
           mvn clean package
           cp appspec.yml target/appspec.yml
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Upload Artifact to S3
         run: aws s3 cp target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
-
   deploy:
     name: Deploy to EC2
     needs: build
@@ -60,4 +52,5 @@ jobs:
       - name: Create Deployment
         run: |
           echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
-          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+          
