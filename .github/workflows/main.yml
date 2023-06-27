@@ -35,7 +35,7 @@ jobs:
       - name: Create Deployment ZIP
         run: |
           cd ${{ github.workspace }}
-          zip -r deployment.zip appspec.yml scripts target/currency-exchange-api.jar
+          zip -r ../deployment.zip appspec.yml scripts currency-exchange-api.jar
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
