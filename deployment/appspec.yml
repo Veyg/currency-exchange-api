@@ -15,18 +15,18 @@ permissions:
     mode: 755
 hooks:
   ApplicationStop:
-    - location: /opt/currency-exchange-api/scripts/application_stop.sh
+    - location: scripts/application_stop.sh
       timeout: 300
       runas: ec2-user
   BeforeInstall:
-    - location: /opt/currency-exchange-api/scripts/before_install.sh
+    - location: scripts/before_install.sh
       timeout: 300
       runas: ec2-user
   AfterInstall:
-    - location: /opt/currency-exchange-api/scripts/after_install.sh
+    - location: scripts/before_install.sh
       timeout: 300
       runas: ec2-user
   ApplicationStart:
-    - location: /opt/currency-exchange-api/scripts/application_start.sh
+    - location: scripts/before_install.sh
       timeout: 300
       runas: ec2-user
