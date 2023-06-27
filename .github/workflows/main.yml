@@ -1,36 +1,57 @@
-name: Deploy to EC2
+name: Build and Deploy
 
 on:
   push:
     branches:
       - main
-      
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
 
+env:
+  applicationfolder: currency-exchange-api
+  AWS_REGION: eu-north-1
+  S3BUCKET: deployment-bucket-currency
+  CODEDEPLOY_APPLICATION: currency-api-codeploy
+  CODEDEPLOY_DEPLOYMENT_GROUP: currency-exchange-api-deployment
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v1
         with:
           java-version: '17'
           java-package: 'jdk'
           distribution: 'adopt'
 
-      - name: Build and Package
+      - name: Build and Package Maven
+        working-directory: ${{ env.applicationfolder }}
         run: mvn clean package
 
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@master
+      - name: Upload Artifact to S3
+        uses: aws-actions/aws-cli@v2
         with:
-          host: ec2-13-49-66-210.eu-north-1.compute.amazonaws.com
-          username: ec2-user
-          key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
-          script: |
-            ssh-keyscan -H ec2-13-49-66-210.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-            ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'pkill -f currency-exchange-api-1.0.0.jar'
-            scp ${{ github.workspace }}/target/currency-exchange-api-1.0.0.jar ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com:currency-exchange-api-1.0.0.jar
-            ssh ec2-user@ec2-13-49-66-210.eu-north-1.compute.amazonaws.com 'nohup java -jar currency-exchange-api-1.0.0.jar > /dev/null 2>&1 &'
+          args: s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create Deployment
+        run: |
+          echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
+          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
