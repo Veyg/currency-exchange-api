@@ -28,7 +28,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build and Package Maven
-        working-directory: ${{ github.workspace }}/${{ env.applicationfolder }}
+        working-directory: ${{ github.workspace }}
         run: mvn clean package
 
       - name: Upload Artifact to S3
