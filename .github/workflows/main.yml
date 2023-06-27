@@ -27,7 +27,7 @@ jobs:
           java-package: 'jdk'
 
       - name: Build and Package Maven
-        working-directory: ${{ env.applicationfolder }}
+        working-directory: ${{ github.workspace }}}
         run: |
           mvn clean package
           cp appspec.yml target/appspec.yml
