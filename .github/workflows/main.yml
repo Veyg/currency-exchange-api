@@ -28,12 +28,13 @@ jobs:
           distribution: 'adopt'
 
       - name: Build and Package Maven
-        working-directory: ${{ env.applicationfolder }}
+        working-directory: ${{ github.workspace }}/${{ env.applicationfolder }}
         run: mvn clean package
 
       - name: Upload Artifact to S3
         run: |
           aws s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
+
   deploy:
     name: Deploy to EC2
     needs: build
