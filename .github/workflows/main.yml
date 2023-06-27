@@ -1,56 +1,66 @@
-name: Build and Deploy
+        name: Build and Deploy
 
-on:
-  push:
-    branches:
-      - main
+        on:
+          push:
+            branches:
+              - main
 
-env:
-  applicationfolder: currency-exchange-api
-  AWS_REGION: eu-north-1
-  S3BUCKET: deployment-bucket-currency
-  CODEDEPLOY_APPLICATION: currency-api-codeploy
-  CODEDEPLOY_DEPLOYMENT_GROUP: currency-exchange-api-deployment
+        env:
+          applicationfolder: currency-exchange-api
+          AWS_REGION: eu-north-1
+          name: Build and Deploy
 
-jobs:
-  build:
-    name: Build and Package
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+          on:
+            push:
+              branches:
+                - main
 
-      - name: Set up Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: '17'
-          java-package: 'jdk'
-          distribution: 'adopt'
+          env:
+            S3BUCKET: deployment-bucket-currency
+            CODEDEPLOY_APPLICATION: currency-api-codeploy
+            CODEDEPLOY_DEPLOYMENT_GROUP: currency-exchange-api-deployment
+            applicationfolder: currency-exchange-api
+            AWS_REGION: eu-north-1
 
-      - name: Build and Package Maven
-        working-directory: ${{ github.workspace }}/${{ env.applicationfolder }}
-        run: mvn clean package
+          jobs:
+            build:
+              name: Build and Package
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout code
+                  uses: actions/checkout@v2
 
-      - name: Upload Artifact to S3
-        run: |
-          aws s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
+                - name: Set up Java
+                  uses: actions/setup-java@v1
+                  with:
+                    java-version: '17'
+                    java-package: 'jdk'
+                    distribution: 'adopt'
 
-  deploy:
-    name: Deploy to EC2
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+                - name: Build and Package Maven
+                  run: mvn clean package
 
-      - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+                - name: Upload Artifact to S3
+                  run: |
+                    aws s3 cp target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
 
-      - name: Create Deployment
-        run: |
-          echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
-          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+            deploy:
+              name: Deploy to EC2
+              needs: build
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout code
+                  uses: actions/checkout@v2
+
+                - name: Set up AWS Credentials
+                  uses: aws-actions/configure-aws-credentials@v1
+                  with:
+                    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    aws-region: ${{ env.AWS_REGION }}
+
+                - name: Create Deployment
+                  run: |
+                    echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
+                    aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=target/currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+```
