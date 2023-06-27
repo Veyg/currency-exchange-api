@@ -26,6 +26,7 @@ jobs:
           java-version: '17'
           java-package: 'jdk'
 
+
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
         run: mvn clean package
@@ -58,5 +59,5 @@ jobs:
 
       - name: Create Deployment
         run: |
-          echo "Deploying branch ${{ github.ref }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
-          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
+          echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}"
+          aws deploy create-deployment --application-name ${{ env.CODEDEPLOY_APPLICATION }} --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} --s3-location bucket=${{ env.S3BUCKET }},bundleType=zip,key=currency-exchange-api.jar,versionLabel=$(git rev-parse HEAD) --ignore-application-stop-failures
