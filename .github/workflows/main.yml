@@ -27,14 +27,13 @@ jobs:
           java-package: 'jdk'
 
       - name: Build and Package Maven
-        working-directory: ${{ github.workspace }}}
+        working-directory: ${{ github.workspace }}/${{ env.applicationfolder }}
         run: |
           mvn clean package
           cp appspec.yml target/appspec.yml
 
       - name: Upload Artifact to S3
-        run: |
-          aws s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
+        run: aws s3 cp ${{ github.workspace }}/${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
 
   deploy:
     name: Deploy to EC2
