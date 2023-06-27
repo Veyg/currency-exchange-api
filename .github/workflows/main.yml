@@ -30,11 +30,14 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           mvn clean package
+          cp appspec.yml target/appspec.yml
+          mkdir -p target/scripts
+          cp scripts/* target/scripts/
           cp target/currency-exchange-api-1.0.0.jar target/currency-exchange-api.jar
 
       - name: Create Deployment ZIP
         run: |
-          cd ${{ github.workspace }}
+          cd ${{ github.workspace }}/target
           zip -r ../deployment.zip appspec.yml scripts currency-exchange-api.jar
 
       - name: Configure AWS Credentials
