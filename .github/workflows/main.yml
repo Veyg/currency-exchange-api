@@ -32,10 +32,8 @@ jobs:
         run: mvn clean package
 
       - name: Upload Artifact to S3
-        uses: aws-actions/aws-cli@v1
-        with:
-          args: s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
-
+        run: |
+          aws s3 cp ${{ env.applicationfolder }}/target/currency-exchange-api-1.0.0.jar s3://${{ env.S3BUCKET }}/
   deploy:
     name: Deploy to EC2
     needs: build
