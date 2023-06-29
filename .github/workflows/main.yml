@@ -33,7 +33,16 @@ jobs:
 
       - name: Move JAR to Deployment Folder
         run: |
-          cp target/currency-exchange-api-1.0.0.jar deployment/currency-exchange-api.jar
+          mkdir deployment
+          cp target/currency-exchange-api-1.0.0.jar deployment/
+
+      - name: Copy Application Properties
+        run: |
+          cp application.properties deployment/
+      
+      - name: Copy Secret Properties
+        run: |
+          echo "api.key=${{ secrets.API_KEY }}" >> deployment/secret.properties
 
       - name: Create Deployment ZIP
         run: |
