@@ -7,6 +7,12 @@ files:
   - source: currency-exchange-api.jar
     destination: /opt/currency-exchange-api/currency-exchange-api.jar
     overwrite: true
+  - source: application.properties
+    destination: /opt/currency-exchange-api/application.properties
+    overwrite: true
+  - source: secret.properties
+    destination: /opt/currency-exchange-api/secret.properties
+    overwrite: true
 permissions:
   - object: /
     pattern: "**"
