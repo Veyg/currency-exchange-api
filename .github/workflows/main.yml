@@ -44,7 +44,7 @@ jobs:
       
       - name: Copy Secret Properties
         run: |
-          echo "api.key=${{ secrets.API_KEY }}" >> deployment/secret.properties
+          echo "${{ secrets.API_KEY }}" >> deployment/secret.properties
 
       - name: Create Deployment ZIP
         run: |
