@@ -40,7 +40,7 @@ jobs:
 
       - name: Copy Application Properties
         run: |
-          cp application.properties deployment/
+          cp src/main/resources/application.properties deployment/
       
       - name: Copy Secret Properties
         run: |
