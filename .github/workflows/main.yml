@@ -28,7 +28,7 @@ jobs:
 
       - name: Move Secrets Properties
         run: |
-          echo "api.key=${{ secrets.API_KEY }}" >> src/main/resources/secrets.properties
+          echo "${{ secrets.API_KEY }}" >> src/main/resources/secrets.properties
 
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
