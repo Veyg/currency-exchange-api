@@ -4,7 +4,7 @@ files:
   - source: scripts/
     destination: /opt/currency-exchange-api/scripts/
     overwrite: true
-  - source: currency-exchange-api-1.0.0.jar
+  - source: target/currency-exchange-api-1.0.0.jar
     destination: /opt/currency-exchange-api/currency-exchange-api.jar
     overwrite: true
 permissions:

@@ -1,4 +1,4 @@
 #!/bin/bash
-# Configure the Java API application after installation
-echo "Configuring the currency-exchange-api application"
-# Example: Set up environment variables, update configuration files, etc.
+
+# Move the JAR file to the desired location
+mv /opt/currency-exchange-api/currency-exchange-api.jar/currency-exchange-api-1.0.0.jar /opt/currency-exchange-api/
