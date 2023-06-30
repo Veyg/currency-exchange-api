@@ -26,6 +26,10 @@ jobs:
           java-version: '17'
           java-package: 'jdk'
 
+      - name: Move Secrets Properties
+        run: |
+          echo "api.key=${{ secrets.API_KEY }}" > src/main/resources/secrets.properties
+
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
         run: |
@@ -34,17 +38,13 @@ jobs:
       - name: Move JAR to Deployment Folder
         run: |
           if [ ! -d "deployment" ]; then
-          mkdir deployment
+            mkdir deployment
           fi
           cp target/currency-exchange-api-1.0.0.jar deployment/
 
       - name: Copy Application Properties
         run: |
           cp src/main/resources/application.properties deployment/
-      
-      - name: Copy Secret Properties
-        run: |
-          echo "${{ secrets.API_KEY }}" >> deployment/secret.properties
 
       - name: Create Deployment ZIP
         run: |
