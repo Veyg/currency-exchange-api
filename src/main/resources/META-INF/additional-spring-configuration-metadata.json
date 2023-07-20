@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "api.url",
+    "type": "java.lang.String",
+    "description": "this is api url"
+  },
+  {
+    "name": "secret.file",
+    "type": "java.lang.String",
+    "description": "API key file'"
+  }
+]}
