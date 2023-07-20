@@ -2,17 +2,17 @@ package com.exchangerate.currencyexchangeapi;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
-
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
+import org.springframework.core.io.ClassPathResource;
 
 @Service
 public class CurrencyExchangeApiClient {
+
     private String apiUrl;
     private String apiKey;
 
@@ -48,10 +48,10 @@ public class CurrencyExchangeApiClient {
                 reader.close();
                 return parseExchangeRateFromResponse(response.toString(), targetCurrency);
             } else {
-                throw new RuntimeException("Error: " + responseCode);
+                throw new IllegalStateException("Received an unexpected HTTP status when trying to retrieve exchange rate: " + responseCode);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Exception: " + e.getMessage(), e);
+            throw new RuntimeException("Exception occurred during the exchange rate retrieval: " + e.getMessage(), e);
         }
     }
 
@@ -61,7 +61,7 @@ public class CurrencyExchangeApiClient {
             JSONObject rates = jsonResponse.getJSONObject("rates");
             return rates.getDouble(targetCurrency);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse exchange rate from response: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Failed to parse the exchange rate from the response: " + e.getMessage(), e);
         }
     }
 }
