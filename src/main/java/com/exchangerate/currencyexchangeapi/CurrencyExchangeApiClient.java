@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class CurrencyExchangeApiClient {
@@ -30,7 +31,7 @@ public class CurrencyExchangeApiClient {
             throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
     }
-
+    @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
     public double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
             String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
