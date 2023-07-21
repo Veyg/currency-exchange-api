@@ -3,11 +3,14 @@ package com.exchangerate.currencyexchangeapi;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -31,29 +34,32 @@ public class CurrencyExchangeApiClient {
             throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
     }
+
     @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
-    public double getExchangeRate(String baseCurrency, String targetCurrency) {
-        try {
-            String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
-            URL url = new URL(requestUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+    public CompletableFuture<Double> getExchangeRate(String baseCurrency, String targetCurrency) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
+                URL url = new URL(requestUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+                    return parseExchangeRateFromResponse(response.toString(), targetCurrency);
+                } else {
+                    throw new IllegalStateException("Received an unexpected HTTP status when trying to retrieve exchange rate: " + responseCode);
                 }
-                reader.close();
-                return parseExchangeRateFromResponse(response.toString(), targetCurrency);
-            } else {
-                throw new IllegalStateException("Received an unexpected HTTP status when trying to retrieve exchange rate: " + responseCode);
+            } catch (Exception e) {
+                throw new RuntimeException("Exception occurred during the exchange rate retrieval: " + e.getMessage(), e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Exception occurred during the exchange rate retrieval: " + e.getMessage(), e);
-        }
+        });
     }
 
     private double parseExchangeRateFromResponse(String response, String targetCurrency) {

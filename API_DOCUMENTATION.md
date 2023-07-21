@@ -93,9 +93,12 @@ If an error occurs, the API will respond with an appropriate HTTP status code an
 
 ```json
 {
-  "error": "Invalid API key provided."
+  "error": "Error during the conversion request: <error_details>"
 }
 ```
+
+## Caching
+To improve performance and reduce waiting times, we implemented caching for the currency conversions. However, please note that due to caching, the currency conversion rates may not always reflect real-time rates.
 
 ## Rate Limiting
 
