@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-@EnableCaching
+// @EnableCaching
 public class CacheConfig implements CachingConfigurer {
 
     @Bean
