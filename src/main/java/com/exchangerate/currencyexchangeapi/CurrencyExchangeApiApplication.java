@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-// @EnableCaching
+@EnableCaching
 public class CurrencyExchangeApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(CurrencyExchangeApiApplication.class, args);

@@ -35,7 +35,7 @@ public class CurrencyExchangeApiClient {
         }
     }
 
-    // @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
+    @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
     public CompletableFuture<Double> getExchangeRate(String baseCurrency, String targetCurrency) {
         return CompletableFuture.supplyAsync(() -> {
             try {
