@@ -38,5 +38,8 @@ public class RateLimitTest {
                 .andExpect(status().isOk());
         // Sleep for a certain amount of time to ensure the rate limiting kicks in
         Thread.sleep(6000); // 6000 milliseconds = 6 seconds, more than your limit of 5 seconds for 1 request
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}", baseCurrency, targetCurrency, amount))
+                .andExpect(status().isOk());
     }
 }
