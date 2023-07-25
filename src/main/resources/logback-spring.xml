@@ -6,13 +6,23 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="CLOUDWATCH" class="com.kdgregory.logging.aws.logback.Appender">
+        <logGroup>SpringBootAppLogs</logGroup> <!-- Replace with your actual Log Group Name -->
+        <logStream>currency-exchange-api-log-stream</logStream>
+        <region>eu-north-1</region> <!-- Replace with your actual region (e.g. eu-north-1) -->
+        <retentionPeriod>14</retentionPeriod>
+        <autocreate>true</autocreate>
+    </appender>
     
     <root level="INFO">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="CLOUDWATCH" />
     </root>
 
     <!-- Specific logger -->
     <logger name="com.exchangerate.currencyexchangeapi" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="CLOUDWATCH" />
     </logger>
 </configuration>
