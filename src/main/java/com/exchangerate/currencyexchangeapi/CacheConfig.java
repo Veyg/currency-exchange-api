@@ -1,5 +1,6 @@
 package com.exchangerate.currencyexchangeapi;
 
+import lombok.extern.slf4j.Slf4j;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Configuration
 @EnableCaching
 public class CacheConfig implements CachingConfigurer {
@@ -27,7 +29,8 @@ public class CacheConfig implements CachingConfigurer {
                 .initialCapacity(100)
                 .maximumSize(500)
                 .expireAfterAccess(1, TimeUnit.HOURS)
-                .recordStats();
+                .recordStats()
+                .removalListener((key, value, cause) -> log.info("Removing key {} from cache due to {}", key, cause));
     }
     
     // The method errorHandler needs to be overridden because we're implementing CachingConfigurer.
