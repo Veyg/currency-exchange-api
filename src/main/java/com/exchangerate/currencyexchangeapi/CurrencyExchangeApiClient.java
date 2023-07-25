@@ -1,5 +1,6 @@
 package com.exchangerate.currencyexchangeapi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.cache.annotation.Cacheable;
 
+@Slf4j
 @Service
 public class CurrencyExchangeApiClient {
 
@@ -31,6 +33,7 @@ public class CurrencyExchangeApiClient {
             properties.load(new ClassPathResource(secretFile).getInputStream());
             return properties.getProperty("api.key");
         } catch (Exception e) {
+            log.error("Failed to load API key from config file: ", e);
             throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
     }
@@ -40,6 +43,7 @@ public class CurrencyExchangeApiClient {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 String requestUrl = apiUrl + "latest.json?app_id=" + apiKey + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
+                log.info("Sending request to {}", requestUrl);
                 URL url = new URL(requestUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -54,9 +58,11 @@ public class CurrencyExchangeApiClient {
                     reader.close();
                     return parseExchangeRateFromResponse(response.toString(), targetCurrency);
                 } else {
+                    log.error("Received an unexpected HTTP status: {}", responseCode);
                     throw new IllegalStateException("Received an unexpected HTTP status when trying to retrieve exchange rate: " + responseCode);
                 }
             } catch (Exception e) {
+                log.error("Exception occurred during the exchange rate retrieval", e);
                 throw new RuntimeException("Exception occurred during the exchange rate retrieval: " + e.getMessage(), e);
             }
         });
@@ -68,6 +74,7 @@ public class CurrencyExchangeApiClient {
             JSONObject rates = jsonResponse.getJSONObject("rates");
             return rates.getDouble(targetCurrency);
         } catch (Exception e) {
+            log.error("Failed to parse the exchange rate from the response: ", e);
             throw new IllegalArgumentException("Failed to parse the exchange rate from the response: " + e.getMessage(), e);
         }
     }
