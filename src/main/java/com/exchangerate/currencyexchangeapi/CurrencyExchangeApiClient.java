@@ -70,12 +70,28 @@ public class CurrencyExchangeApiClient {
 
     private double parseExchangeRateFromResponse(String response, String targetCurrency) {
         try {
+            if (response == null || response.isEmpty()) {
+                log.error("Received an empty or null response from the API");
+                throw new IllegalArgumentException("Received an empty or null response from the API");
+            }
+            
             JSONObject jsonResponse = new JSONObject(response);
+            if (!jsonResponse.has("rates")) {
+                log.error("The 'rates' field is missing in the response");
+                throw new IllegalArgumentException("The 'rates' field is missing in the response");
+            }
+    
             JSONObject rates = jsonResponse.getJSONObject("rates");
+            if (!rates.has(targetCurrency)) {
+                log.error("The target currency is missing in the response rates");
+                throw new IllegalArgumentException("The target currency is missing in the response rates");
+            }
+    
             return rates.getDouble(targetCurrency);
         } catch (Exception e) {
             log.error("Failed to parse the exchange rate from the response: ", e);
             throw new IllegalArgumentException("Failed to parse the exchange rate from the response: " + e.getMessage(), e);
         }
     }
+    
 }
