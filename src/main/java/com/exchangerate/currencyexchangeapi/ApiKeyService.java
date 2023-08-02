@@ -15,7 +15,7 @@ public class ApiKeyService {
     }
 
     public boolean isValidApiKey(String apiKey) {
-        String sql = "SELECT COUNT(*) FROM api_key_list WHERE api_key = ?";
+        String sql = "SELECT COUNT(*) FROM api_key_list WHERE apikey = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, apiKey);
         return count > 0;
     }
