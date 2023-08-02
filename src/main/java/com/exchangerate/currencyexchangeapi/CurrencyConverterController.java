@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
@@ -13,19 +14,28 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/currency")
 public class CurrencyConverterController {
-    private final CurrencyExchangeApiClient currencyExchangeApiClient;
 
-    public CurrencyConverterController(CurrencyExchangeApiClient currencyExchangeApiClient) {
+    private final CurrencyExchangeApiClient currencyExchangeApiClient;
+    private final ApiKeyService apiKeyService;
+
+    public CurrencyConverterController(CurrencyExchangeApiClient currencyExchangeApiClient, ApiKeyService apiKeyService) {
         this.currencyExchangeApiClient = currencyExchangeApiClient;
+        this.apiKeyService = apiKeyService;
     }
 
     @GetMapping("/convert/{baseCurrency}/{targetCurrency}/{amount}")
     public CompletableFuture<ResponseEntity<?>> convertCurrency(
         @PathVariable String baseCurrency,
         @PathVariable String targetCurrency,
-        @PathVariable double amount)
+        @PathVariable double amount,
+        @RequestParam("apiKey") String apiKey)
     {
         log.info("Received request to convert from {} to {} amount {}", baseCurrency, targetCurrency, amount);
+
+        if(!apiKeyService.isValidApiKey(apiKey)){
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid API key"));
+        }
+
         return currencyExchangeApiClient.getExchangeRate(baseCurrency, targetCurrency).thenApply(exchangeRate -> {
             try {
                 double convertedAmount = exchangeRate * amount;

@@ -8,5 +8,25 @@
     "name": "secret.file",
     "type": "java.lang.String",
     "description": "API key file'"
+  },
+  {
+    "name": "spring.database.username",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.database.username'"
+  },
+  {
+    "name": "spring.database.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.database.password'"
+  },
+  {
+    "name": "spring.database.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.database.url'"
+  },
+  {
+    "name": "spring.database.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.database.driver-class-name'"
   }
 ]}
