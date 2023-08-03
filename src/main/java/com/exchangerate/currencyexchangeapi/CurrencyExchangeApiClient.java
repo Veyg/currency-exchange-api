@@ -5,15 +5,17 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.Properties;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
 @Service
@@ -26,7 +28,6 @@ public class CurrencyExchangeApiClient {
         this.apiUrl = apiUrl;
         this.apiKey = loadApiKeyFromSecret(secretFile);
     }
-
     private String loadApiKeyFromSecret(String secretFile) {
         try {
             Properties properties = new Properties();
@@ -36,6 +37,11 @@ public class CurrencyExchangeApiClient {
             log.error("Failed to load API key from config file: ", e);
             throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
+    }
+    @PostConstruct
+    public void printapiProperties(){
+        log.info("api.url: {}", apiUrl);
+        log.info("api.key: {}", apiKey);
     }
 
     @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
@@ -93,5 +99,4 @@ public class CurrencyExchangeApiClient {
             throw new IllegalArgumentException("Failed to parse the exchange rate from the response: " + e.getMessage(), e);
         }
     }
-    
 }
