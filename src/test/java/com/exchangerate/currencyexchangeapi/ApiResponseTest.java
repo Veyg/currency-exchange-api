@@ -10,11 +10,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.concurrent.CompletableFuture;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = CurrencyExchangeApiApplication.class)
 @AutoConfigureMockMvc
-public class RateLimitTest {
+public class ApiResponseTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -23,23 +24,22 @@ public class RateLimitTest {
     private CurrencyExchangeApiClient currencyExchangeApiClient;
 
     @Test
-    public void testRateLimit() throws Exception {
+    public void testApiResponse() throws Exception {
         // Mock the behavior of CurrencyExchangeApiClient
         Mockito.when(currencyExchangeApiClient.getExchangeRate("USD", "EUR"))
                 .thenReturn(CompletableFuture.completedFuture(1.0));
 
-        // Define the base currency, target currency and the amount
+        // Define the base currency, target currency, and amount
         String baseCurrency = "USD";
         String targetCurrency = "EUR";
         double amount = 100.0;
         
-        // First request should be OK
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}", baseCurrency, targetCurrency, amount))
-                .andExpect(status().isOk());
-        // Sleep for a certain amount of time to ensure the rate limiting kicks in
-        Thread.sleep(6000); // 6000 milliseconds = 6 seconds, more than your limit of 5 seconds for 1 request
+        // Get API key from environment variable
+        String apiKey = System.getenv("API_KEY_TEST");
+        System.out.println("API_KEY_TEST: " + apiKey);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}", baseCurrency, targetCurrency, amount))
+        // Perform the request with the API key and expect a successful response
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}?apiKey={apiKey}", baseCurrency, targetCurrency, amount, apiKey))
                 .andExpect(status().isOk());
     }
 }

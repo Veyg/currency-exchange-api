@@ -5,8 +5,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -24,10 +22,20 @@ public class CurrencyExchangeApiClient {
     private String apiUrl;
     private String apiKey;
 
+    // Load DB username and password from environment variables
+    private String dbUsername = System.getenv("DB_USERNAME");
+    private String dbPassword = System.getenv("DB_PASSWORD");
+
     public CurrencyExchangeApiClient(@Value("${api.url}") String apiUrl, @Value("${secret.file}") String secretFile) {
         this.apiUrl = apiUrl;
         this.apiKey = loadApiKeyFromSecret(secretFile);
+            // Debugging: Print the loaded environment variables
+        log.info("Loaded environment variables:");
+        log.info("DB_USERNAME: {}", dbUsername);
+        log.info("DB_PASSWORD: {}", dbPassword);
+        log.info("API_Key: {}", apiKey);
     }
+
     private String loadApiKeyFromSecret(String secretFile) {
         try {
             Properties properties = new Properties();
@@ -37,11 +45,6 @@ public class CurrencyExchangeApiClient {
             log.error("Failed to load API key from config file: ", e);
             throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
         }
-    }
-    @PostConstruct
-    public void printapiProperties(){
-        log.info("api.url: {}", apiUrl);
-        log.info("api.key: {}", apiKey);
     }
 
     @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")
@@ -80,19 +83,19 @@ public class CurrencyExchangeApiClient {
                 log.error("Received an empty or null response from the API");
                 throw new IllegalArgumentException("Received an empty or null response from the API");
             }
-            
+
             JSONObject jsonResponse = new JSONObject(response);
             if (!jsonResponse.has("rates")) {
                 log.error("The 'rates' field is missing in the response");
                 throw new IllegalArgumentException("The 'rates' field is missing in the response");
             }
-    
+
             JSONObject rates = jsonResponse.getJSONObject("rates");
             if (!rates.has(targetCurrency)) {
                 log.error("The target currency is missing in the response rates");
                 throw new IllegalArgumentException("The target currency is missing in the response rates");
             }
-    
+
             return rates.getDouble(targetCurrency);
         } catch (Exception e) {
             log.error("Failed to parse the exchange rate from the response: ", e);
