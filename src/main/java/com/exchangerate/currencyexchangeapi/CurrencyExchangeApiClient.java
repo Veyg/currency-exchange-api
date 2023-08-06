@@ -4,14 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.Properties;
-
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 
@@ -26,25 +25,18 @@ public class CurrencyExchangeApiClient {
     private String dbUsername = System.getenv("DB_USERNAME");
     private String dbPassword = System.getenv("DB_PASSWORD");
 
-    public CurrencyExchangeApiClient(@Value("${api.url}") String apiUrl, @Value("${secret.file}") String secretFile) {
+    public CurrencyExchangeApiClient(@Value("${api.url}") String apiUrl) {
         this.apiUrl = apiUrl;
-        this.apiKey = loadApiKeyFromSecret(secretFile);
-            // Debugging: Print the loaded environment variables
+
+        // Load API key from .env file using Dotenv
+        Dotenv dotenv = Dotenv.configure().load();
+        this.apiKey = dotenv.get("API_KEY");
+
+        // Debugging: Print the loaded environment variables
         log.info("Loaded environment variables:");
         log.info("DB_USERNAME: {}", dbUsername);
         log.info("DB_PASSWORD: {}", dbPassword);
         log.info("API_Key: {}", apiKey);
-    }
-
-    private String loadApiKeyFromSecret(String secretFile) {
-        try {
-            Properties properties = new Properties();
-            properties.load(new ClassPathResource(secretFile).getInputStream());
-            return properties.getProperty("api.key");
-        } catch (Exception e) {
-            log.error("Failed to load API key from config file: ", e);
-            throw new RuntimeException("Failed to load API key from config file: " + e.getMessage(), e);
-        }
     }
 
     @Cacheable(value = "currencyExchange", key = "#baseCurrency.concat('-').concat(#targetCurrency)")

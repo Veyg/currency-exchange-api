@@ -67,6 +67,14 @@ jobs:
       - name: Upload Artifact to S3
         run: aws s3 cp deployment.zip s3://${{ env.S3BUCKET }}/
 
+      - name: Mask sensitive outputs
+        if: always()  # Make sure this step always runs to mask outputs
+        with:
+          # Specify the output variables you want to mask
+          API_KEY: ${{ secrets.API_KEY }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
   deploy:
     name: Deploy to EC2
     needs: build
