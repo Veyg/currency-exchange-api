@@ -28,10 +28,10 @@ jobs:
 
       - name: Move Secrets Properties
         run: |
-          echo "API_KEY=${{ secrets.API_KEY }}" >> src/main/resources/.env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> src/main/resources/.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> src/main/resources/.env
-          echo "API_KEY_TEST=${{ secrets.API_KEY_TEST }}" >> src/main/resources/.env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "API_KEY_TEST=${{ secrets.API_KEY_TEST }}" >> .env
 
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
