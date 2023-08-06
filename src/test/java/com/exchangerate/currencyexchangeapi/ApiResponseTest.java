@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.concurrent.CompletableFuture;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,21 +26,26 @@ public class ApiResponseTest {
 
     @Test
     public void testApiResponse() throws Exception {
+        // Load environment variables from .env file
+        Dotenv dotenv = Dotenv.configure().load();
+        
         // Mock the behavior of CurrencyExchangeApiClient
         Mockito.when(currencyExchangeApiClient.getExchangeRate("USD", "EUR"))
                 .thenReturn(CompletableFuture.completedFuture(1.0));
-
+    
         // Define the base currency, target currency, and amount
         String baseCurrency = "USD";
         String targetCurrency = "EUR";
-        double amount = 100.0;
+        double amount = 100;
+    
+        // Retrieve API key from environment variables
+        String apiKey = dotenv.get("API_KEY_TEST");
         
-        // Get API key from environment variable
-        String apiKey = System.getenv("API_KEY_TEST");
-        System.out.println("API_KEY_TEST: " + apiKey);
-
+        // Print the constructed URL for debugging
+        String requestUrl = "/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}";    
         // Perform the request with the API key and expect a successful response
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}?apiKey={apiKey}", baseCurrency, targetCurrency, amount, apiKey))
+        mockMvc.perform(MockMvcRequestBuilders.get(requestUrl, baseCurrency, targetCurrency, amount)
+                .param("apiKey", apiKey))
                 .andExpect(status().isOk());
     }
 }
