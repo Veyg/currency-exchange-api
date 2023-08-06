@@ -1,9 +1,9 @@
 name: Build and Deploy
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
 
 env:
   applicationfolder: currency-exchange-api
@@ -16,6 +16,10 @@ jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-latest
+    env:
+      API_KEY: ${{ secrets.API_KEY }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -28,7 +32,9 @@ jobs:
 
       - name: Move Secrets Properties
         run: |
-          echo "${{ secrets.API_KEY }}" >> src/main/resources/secrets.properties
+          echo "API_KEY=${API_KEY}" >> src/main/resources/.env
+          echo "DB_USERNAME=${DB_USERNAME}" >> src/main/resources/.env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> src/main/resources/.env
 
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
@@ -65,6 +71,9 @@ jobs:
     name: Deploy to EC2
     needs: build
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

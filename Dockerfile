@@ -2,7 +2,7 @@
 FROM openjdk:17-jdk-slim
 
 # Add Maintainer Info
-LABEL maintainer="email@example.com"
+LABEL maintainer="https://github.com/veyg"
 
 # Add a volume pointing to /tmp
 VOLUME /tmp

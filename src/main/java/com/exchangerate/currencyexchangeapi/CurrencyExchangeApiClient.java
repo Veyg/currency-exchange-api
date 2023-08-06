@@ -9,11 +9,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.Properties;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
 @Service
@@ -22,9 +22,18 @@ public class CurrencyExchangeApiClient {
     private String apiUrl;
     private String apiKey;
 
+    // Load DB username and password from environment variables
+    private String dbUsername = System.getenv("DB_USERNAME");
+    private String dbPassword = System.getenv("DB_PASSWORD");
+
     public CurrencyExchangeApiClient(@Value("${api.url}") String apiUrl, @Value("${secret.file}") String secretFile) {
         this.apiUrl = apiUrl;
         this.apiKey = loadApiKeyFromSecret(secretFile);
+            // Debugging: Print the loaded environment variables
+        log.info("Loaded environment variables:");
+        log.info("DB_USERNAME: {}", dbUsername);
+        log.info("DB_PASSWORD: {}", dbPassword);
+        log.info("API_Key: {}", apiKey);
     }
 
     private String loadApiKeyFromSecret(String secretFile) {
@@ -74,24 +83,23 @@ public class CurrencyExchangeApiClient {
                 log.error("Received an empty or null response from the API");
                 throw new IllegalArgumentException("Received an empty or null response from the API");
             }
-            
+
             JSONObject jsonResponse = new JSONObject(response);
             if (!jsonResponse.has("rates")) {
                 log.error("The 'rates' field is missing in the response");
                 throw new IllegalArgumentException("The 'rates' field is missing in the response");
             }
-    
+
             JSONObject rates = jsonResponse.getJSONObject("rates");
             if (!rates.has(targetCurrency)) {
                 log.error("The target currency is missing in the response rates");
                 throw new IllegalArgumentException("The target currency is missing in the response rates");
             }
-    
+
             return rates.getDouble(targetCurrency);
         } catch (Exception e) {
             log.error("Failed to parse the exchange rate from the response: ", e);
             throw new IllegalArgumentException("Failed to parse the exchange rate from the response: " + e.getMessage(), e);
         }
     }
-    
 }
