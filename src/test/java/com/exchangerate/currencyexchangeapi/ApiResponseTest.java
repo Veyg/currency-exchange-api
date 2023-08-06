@@ -42,7 +42,10 @@ public class ApiResponseTest {
         String apiKey = dotenv.get("API_KEY_TEST");
         
         // Print the constructed URL for debugging
-        String requestUrl = "/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}";    
+        String requestUrl = "/api/currency/convert/{baseCurrency}/{targetCurrency}/{amount}";
+        System.out.println("API Key: " + apiKey);
+        System.out.println("Request URL: " + requestUrl);
+
         // Perform the request with the API key and expect a successful response
         mockMvc.perform(MockMvcRequestBuilders.get(requestUrl, baseCurrency, targetCurrency, amount)
                 .param("apiKey", apiKey))
