@@ -1,7 +1,7 @@
 #!/bin/bash
 # Start the Java API application
 echo "Loading env variables"
-source .env
+source /opt/currency-exchange-api/.env
 echo "Starting the currency-exchange-api application"
 java -jar /opt/currency-exchange-api/currency-exchange-api-1.0.0.jar
 

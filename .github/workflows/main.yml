@@ -44,7 +44,7 @@ jobs:
           fi
           cp target/currency-exchange-api-1.0.0.jar deployment/
 
-      - name: Copy Application Properties
+      - name: Copy Application Properties and .env
         run: |
           cp src/main/resources/application.properties deployment/
           cp src/main/resources/.env deployment/
