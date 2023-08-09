@@ -1,20 +1,17 @@
 # Start with a base image containing Java runtime
 FROM openjdk:17-jdk-slim
 
-# Add Maintainer Info
-LABEL maintainer="https://github.com/veyg"
+# Create a directory to copy the application JAR and resources
+WORKDIR /app
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Copy the application JAR
+COPY target/*.jar app.jar
 
-# Make port 8080 available to the world outside this container
+# Copy the .env file to the container
+COPY .env .env
+
+# Expose port 8080 for the application
 EXPOSE 8080
 
-# The application's jar file
-ARG JAR_FILE=target/*.jar
-
-# Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
-
-# Run the jar file 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+# Run the application with environment variables from the .env file
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
