@@ -30,6 +30,8 @@ public class CurrencyExchangeApiClient {
         // Load API key from .env file using Dotenv
         Dotenv dotenv = Dotenv.configure().load();
         this.apiKey = dotenv.get("API_KEY");
+        this.dbUsername = dotenv.get("DB_USERNAME");
+        this.dbPassword = dotenv.get("DB_PASSWORD");
 
         // Debugging: Print the loaded environment variables
         log.info("Loaded environment variables:");
