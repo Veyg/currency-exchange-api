@@ -4,8 +4,6 @@ files:
   - source: scripts/
     destination: /opt/currency-exchange-api/scripts/
     overwrite: true
-  - source: .env
-    destination: /opt/currency-exchange-api/
 permissions:
   - object: /
     pattern: "**"
