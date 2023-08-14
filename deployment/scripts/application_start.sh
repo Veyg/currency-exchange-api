@@ -3,7 +3,8 @@
 # Define paths and image name
 IMAGE_TAR="/opt/currency-exchange-api/docker-image.tar.gz"
 EXTRACT_DIR="/opt/currency-exchange-api"
-IMAGE_NAME="currency-exchange-api"
+IMAGE_NAME="veyg/currency-exchange-api"
+LOAD_IMG="docker-image.tar.gz"
 
 # Check if the image tar file exists
 if [ ! -f "$IMAGE_TAR" ]; then
@@ -11,17 +12,13 @@ if [ ! -f "$IMAGE_TAR" ]; then
     exit 1
 fi
 
-# Extract the Docker image
-echo "Extracting Docker image..."
-tar -xzvf "$IMAGE_TAR" -C "$EXTRACT_DIR"
-
 # Load the Docker image
 echo "Loading Docker image..."
-docker load -i "$EXTRACT_DIR/$IMAGE_NAME.tar"
+docker load -i "$EXTRACT_DIR/$LOAD_IMG.tar"
 
 # Run the Docker container
 echo "Starting Docker container..."
-docker run -d -p 8080:8080 --name currency-api-container "$IMAGE_NAME"
+docker run -d -p 8080:8080 p 3306:3306 --name currency-api-container "$IMAGE_NAME"
 
 # Check if the container is running
 if [ "$(docker ps -q -f name=currency-api-container)" ]; then
