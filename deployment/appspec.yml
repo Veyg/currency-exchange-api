@@ -4,6 +4,9 @@ files:
   - source: scripts/
     destination: /opt/currency-exchange-api/scripts/
     overwrite: true
+  - source: deployment/docker-image.tar.gz
+    destination: /opt/currency-exchange-api/
+    overwrite: true
 permissions:
   - object: /
     pattern: "**"
@@ -26,4 +29,4 @@ hooks:
   ApplicationStart:
     - location: scripts/application_start.sh
       timeout: 300
-      runas: ec2-user
+      runas: ec
