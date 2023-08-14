@@ -13,5 +13,8 @@ COPY .env .env
 # Expose port 8080 for the application
 EXPOSE 8080
 
+# Expose port 3306 for the database
+EXPOSE 3306
+
 # Run the application with environment variables from the .env file
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
