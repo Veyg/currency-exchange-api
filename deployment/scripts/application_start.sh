@@ -14,7 +14,7 @@ fi
 
 # Load the Docker image
 echo "Loading Docker image..."
-docker load -i "$EXTRACT_DIR/$LOAD_IMG.tar"
+docker load -i "$EXTRACT_DIR/$LOAD_IMG"
 
 # Run the Docker container
 echo "Starting Docker container..."
