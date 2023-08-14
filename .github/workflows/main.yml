@@ -64,6 +64,11 @@ jobs:
       - name: Upload Artifact to S3
         run: aws s3 cp deployment.zip s3://${{ env.S3BUCKET }}
 
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ github.repository }} .
+          docker save -o deployment/docker-image.tar.gz ${{ github.repository }}
+
   deploy:
     name: Deploy to EC2
     needs: build

@@ -1,4 +1,6 @@
 #!/bin/bash
-# Prepare the environment for the Java API application installation
-echo "Preparing for installation"
-# Example: Perform any necessary setup or configuration steps
+set -e
+
+# Stop and remove existing Docker containers
+docker stop currency-exchange-api-container || true
+docker rm currency-exchange-api-container || true

@@ -1,9 +1,10 @@
 #!/bin/bash
-# Start the Java API application
-echo "Loading env variables"
-source /opt/currency-exchange-api/.env
-echo "Starting the currency-exchange-api application"
-java -jar /opt/currency-exchange-api/currency-exchange-api-1.0.0.jar
 
-# Exit code 0 indicates success. Exit code 1 indicates failure.
-exit 0
+# Extract the Docker image
+tar -xzvf /opt/currency-exchange-api/docker-image.tar.gz -C /opt/currency-exchange-api/
+
+# Load the Docker image
+docker load -i /opt/currency-exchange-api/currency-exchange-api.tar
+
+# Run the Docker container
+docker run -d -p 8080:8080 --name currency-api-container currency-exchange-api

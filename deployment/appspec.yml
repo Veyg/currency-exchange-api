@@ -6,9 +6,6 @@ files:
     overwrite: true
   - source: .env
     destination: /opt/currency-exchange-api/
-  - source: currency-exchange-api-1.0.0.jar
-    destination: /opt/currency-exchange-api/currency-exchange-api.jar
-    overwrite: true
 permissions:
   - object: /
     pattern: "**"
