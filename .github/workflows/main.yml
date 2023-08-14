@@ -51,6 +51,7 @@ jobs:
       - name: Copy Application Properties
         run: |
           cp src/main/resources/application.properties deployment/
+          cp .env deployment/
 
       - name: Create Deployment ZIP
         run: |

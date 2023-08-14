@@ -7,6 +7,9 @@ files:
   - source: docker-image.tar.gz
     destination: /opt/currency-exchange-api/
     overwrite: true
+  - source: .env
+    destination: /opt/currency-exchange-api/
+    overwrite: true
 permissions:
   - object: /
     pattern: "**"
