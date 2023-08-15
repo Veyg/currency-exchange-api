@@ -18,7 +18,7 @@ docker load -i "$EXTRACT_DIR/$LOAD_IMG"
 
 # Run the Docker container
 echo "Starting Docker container..."
-docker run -d -p 8080:8080 -p 3306:3306 --name currency-api-container "$IMAGE_NAME" --env-file /opt/currency-exchange-api/.env
+docker run -d -p 8080:8080 -p 3306:3306 --env-file /opt/currency-exchange-api/.env --name currency-api-container "$IMAGE_NAME"
 
 # Check if the container is running
 if [ "$(docker ps -q -f name=currency-api-container)" ]; then
