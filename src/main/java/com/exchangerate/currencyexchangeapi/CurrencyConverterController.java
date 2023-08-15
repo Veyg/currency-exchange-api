@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -37,15 +36,7 @@ public class CurrencyConverterController {
             return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid API key"));
         }
 
-        ApiKeyRecord apiKeyRecord = apiKeyService.getApiKeyRecord(apiKey);
-        if (apiKeyRecord == null) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(500).body("Error retrieving API key record"));
-        }
-
-        int maxRequestsFromDB = apiKeyRecord.getMaxRequests();
-        TimeUnit perTimeUnit = apiKeyRecord.getPerTimeUnit();
-
-        if (apiKeyService.isRateLimitExceeded(apiKey, maxRequestsFromDB, perTimeUnit)) {
+        if (apiKeyService.isRateLimitExceeded(apiKey)) {
             return CompletableFuture.completedFuture(ResponseEntity.status(429).body("Rate limit exceeded"));
         }
 
