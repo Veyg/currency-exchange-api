@@ -35,7 +35,6 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           mvn clean package
-
       - name: Build Docker Image
         run: |
           docker build -t veyg/currency-exchange-api .
