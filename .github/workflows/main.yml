@@ -46,7 +46,6 @@ jobs:
           if [ ! -d "deployment" ]; then
             mkdir deployment
           fi
-          cp target/currency-exchange-api-1.0.0.jar deployment/
 
       - name: Copy Application Properties
         run: |
