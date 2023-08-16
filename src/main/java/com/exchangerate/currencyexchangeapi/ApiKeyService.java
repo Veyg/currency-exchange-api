@@ -2,10 +2,10 @@ package com.exchangerate.currencyexchangeapi;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Import for @Transactional
 
 import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
+import java.sql.Timestamp;
 
 @Service
 public class ApiKeyService {
@@ -27,7 +27,6 @@ public class ApiKeyService {
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             ApiKeyRecord record = new ApiKeyRecord();
             record.setMaxRequests(rs.getInt("max_requests"));
-            // Convert TimeUnit value from string to enum
             record.setPerTimeUnit(TimeUnit.valueOf(rs.getString("per_time_unit")));
             record.setRequestCount(rs.getLong("request_count"));
             record.setLastRequestDatetime(rs.getTimestamp("last_request_datetime"));
@@ -37,32 +36,32 @@ public class ApiKeyService {
 
     public boolean isRateLimitExceeded(String apiKey) {
         ApiKeyRecord apiKeyRecord = getApiKeyRecord(apiKey);
-
+    
         if (apiKeyRecord == null) {
             return false;
         }
-
+    
         int maxRequests = apiKeyRecord.getMaxRequests();
         TimeUnit perTimeUnit = apiKeyRecord.getPerTimeUnit();
         long requestCount = apiKeyRecord.getRequestCount();
         java.sql.Timestamp lastRequestTimestamp = apiKeyRecord.getLastRequestDatetime();
-
-        long currentTime = System.currentTimeMillis();
-        long timeDifferenceMillis = currentTime - lastRequestTimestamp.getTime();
-        long timeDifferencePerTimeUnit = TimeUnit.MILLISECONDS.convert(timeDifferenceMillis, TimeUnit.MILLISECONDS);
-
-        if (timeDifferencePerTimeUnit > perTimeUnit.toMillis(1)) {
-            jdbcTemplate.update("UPDATE api_key_list SET request_count = 1, last_request_datetime = NOW() WHERE apikey = ?", apiKey);
+    
+        long currentTimeMillis = System.currentTimeMillis();
+        long timeDifferenceMillis = currentTimeMillis - lastRequestTimestamp.getTime();
+    
+        if (timeDifferenceMillis >= perTimeUnit.toMillis(1)) {
+            // Reset the request count and update the last request time
+            jdbcTemplate.update("UPDATE api_key_list SET request_count = 1, last_request_datetime = ? WHERE apikey = ?", new Timestamp(currentTimeMillis), apiKey);
             return false; // Rate limit not exceeded
-        } else {
-            jdbcTemplate.update("UPDATE api_key_list SET request_count = request_count + 1, last_request_datetime = NOW() WHERE apikey = ?", apiKey);
         }
-
+    
         if (requestCount >= maxRequests) {
             return true; // Rate limit exceeded
         }
-
-        jdbcTemplate.update("UPDATE api_key_list SET request_count = ?, last_request_datetime = NOW() WHERE apikey = ?", requestCount + 1, apiKey);
-        return false;
+    
+        jdbcTemplate.update("UPDATE api_key_list SET request_count = request_count + 1 WHERE apikey = ?", apiKey);
+        return false; // Rate limit not exceeded
     }
+    
+    
 }
