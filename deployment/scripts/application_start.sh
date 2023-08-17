@@ -1,8 +1,29 @@
 #!/bin/bash
-# Start the Java API application
 
-echo "Starting the currency-exchange-api application"
-java -jar /opt/currency-exchange-api/currency-exchange-api-1.0.0.jar
+# Define paths and image name
+IMAGE_TAR="/opt/currency-exchange-api/docker-image.tar.gz"
+EXTRACT_DIR="/opt/currency-exchange-api"
+IMAGE_NAME="veyg/currency-exchange-api"
+LOAD_IMG="docker-image.tar.gz"
 
-# Exit code 0 indicates success. Exit code 1 indicates failure.
-exit 0
+# Check if the image tar file exists
+if [ ! -f "$IMAGE_TAR" ]; then
+    echo "Error: Docker image tar file not found at $IMAGE_TAR"
+    exit 1
+fi
+
+# Load the Docker image
+echo "Loading Docker image..."
+docker load -i "$EXTRACT_DIR/$LOAD_IMG"
+
+# Run the Docker container
+echo "Starting Docker container..."
+docker run -d -p 8080:8080 -p 3306:3306 --env-file /opt/currency-exchange-api/.env --name currency-api-container "$IMAGE_NAME"
+
+# Check if the container is running
+if [ "$(docker ps -q -f name=currency-api-container)" ]; then
+    echo "Docker container started successfully"
+else
+    echo "Error: Docker container failed to start"
+    exit 1
+fi

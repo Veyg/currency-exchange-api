@@ -1,4 +1,6 @@
-#!/bin/bash
-# Prepare the environment for the Java API application installation
-echo "Preparing for installation"
-# Example: Perform any necessary setup or configuration steps
+# # Remove the deployment directory (if it exists)
+sudo rm -rf /opt/currency-exchange-api || true
+
+# Clean up old Docker containers and images
+docker container prune -f
+docker image prune -f

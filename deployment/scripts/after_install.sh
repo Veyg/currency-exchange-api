@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
-# Move the JAR file to the desired location
-mv /opt/currency-exchange-api/currency-exchange-api.jar/currency-exchange-api-1.0.0.jar /opt/currency-exchange-api/
+# Any additional post-installation tasks you need
+rm -rf /opt/codedeploy-agent/deployment-root/f758f175-2dce-4cac-a31d-6aa47404eafb || true

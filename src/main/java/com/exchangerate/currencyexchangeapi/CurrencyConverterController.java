@@ -36,6 +36,10 @@ public class CurrencyConverterController {
             return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid API key"));
         }
 
+        if (apiKeyService.isRateLimitExceeded(apiKey)) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(429).body("Rate limit exceeded"));
+        }
+
         return currencyExchangeApiClient.getExchangeRate(baseCurrency, targetCurrency).thenApply(exchangeRate -> {
             try {
                 double convertedAmount = exchangeRate * amount;

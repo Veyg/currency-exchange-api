@@ -14,12 +14,8 @@ env:
 
 jobs:
   build:
-    name: Build and Package
+    name: Build Docker Image and Deploy
     runs-on: ubuntu-latest
-    env:
-      API_KEY: ${{ secrets.API_KEY }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,27 +26,30 @@ jobs:
           java-version: '17'
           java-package: 'jdk'
 
-      - name: Move Secrets Properties
+      - name: Create .env File
         run: |
-          echo "API_KEY=${API_KEY}" >> src/main/resources/.env
-          echo "DB_USERNAME=${DB_USERNAME}" >> src/main/resources/.env
-          echo "DB_PASSWORD=${DB_PASSWORD}" >> src/main/resources/.env
-
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
       - name: Build and Package Maven
         working-directory: ${{ github.workspace }}
         run: |
           mvn clean package
+      - name: Build Docker Image
+        run: |
+          docker build -t veyg/currency-exchange-api .
+          docker save -o deployment/docker-image.tar.gz veyg/currency-exchange-api
 
       - name: Move JAR to Deployment Folder
         run: |
           if [ ! -d "deployment" ]; then
             mkdir deployment
           fi
-          cp target/currency-exchange-api-1.0.0.jar deployment/
 
       - name: Copy Application Properties
         run: |
           cp src/main/resources/application.properties deployment/
+          cp .env deployment/
 
       - name: Create Deployment ZIP
         run: |
@@ -65,23 +64,12 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload Artifact to S3
-        run: aws s3 cp deployment.zip s3://${{ env.S3BUCKET }}/
-
-      - name: Mask sensitive outputs
-        if: always()  # Make sure this step always runs to mask outputs
-        with:
-          # Specify the output variables you want to mask
-          API_KEY: ${{ secrets.API_KEY }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: aws s3 cp deployment.zip s3://${{ env.S3BUCKET }}
 
   deploy:
     name: Deploy to EC2
     needs: build
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
