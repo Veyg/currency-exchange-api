@@ -63,7 +63,6 @@ Swagger UI provides a visual interface for interacting with the API. It automati
 Caching is implemented using the Caffeine library. The cache is set to have an initial capacity of 100 and a maximum size of 500. Cached values expire after 1 hour of access.
 Certainly, here's the updated section with the public test API key and the cURL command for testing on EC2:
 
-```markdown
 ## Authentication
 
 The Currency Converter API requires API key authentication. To access the API, you need to include your API key in the request headers.
@@ -86,7 +85,6 @@ curl -X GET 'http://ec2-16-170-219-123.eu-north-1.compute.amazonaws.com:8080/api
 ```
 
 Remember to replace the API key in the `apiKey` parameter with the provided public test API key.
-```
 
 Make sure to replace the EC2 instance hostname in the cURL command with the actual hostname of your EC2 instance.
 ## Contributing
