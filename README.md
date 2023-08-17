@@ -36,7 +36,7 @@ This project is a simple currency exchange API built with Spring Boot. It provid
 
 1. Run the Docker container using the built image:
    ```sh
-   docker run -p 8080:8080 -p 3030 currency-exchange-api
+   docker run -p 8080:8080 -p 3030:3030 currency-exchange-api
    ```
 
 2. Visit `http://localhost:8080/swagger-ui/index.html` in your web browser to interact with the API using the Swagger UI.
