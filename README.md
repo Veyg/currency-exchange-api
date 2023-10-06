@@ -1,6 +1,8 @@
 # Currency Exchange API
 
 This project is a simple currency exchange API built with Spring Boot. It provides an interface for converting currency amounts between different currencies using real-time exchange rates.
+
+
 App is no longer maintained as it is personal project to fullfill my joy of being able to use EC2/S3/RDS 
 ## Features
 
