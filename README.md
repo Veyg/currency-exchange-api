@@ -71,22 +71,13 @@ The Currency Converter API requires API key authentication. To access the API, y
 Authorization: Bearer <your-api-key>
 ```
 
-For testing purposes, you can use the following public test API key:
+~~For testing purposes, you can use the following public test API key:~~ 
 
 ```
-7a7a53803c2211eeb0030abbe126b77c
+Discontinued
 ```
-### Live test on EC2
+~~### Live test on EC2~~ 
 
-To test the API on your EC2 instance, you can use a cURL command similar to the one mentioned above. Replace `ec2-16-170-219-123.eu-north-1.compute.amazonaws.com:8080` with your EC2 instance's hostname and port:
-
-```bash
-curl -X GET 'http://ec2-16-170-219-123.eu-north-1.compute.amazonaws.com:8080/api/currency/convert/USD/EUR/100?apiKey=7a7a53803c2211eeb0030abbe126b77c'
-```
-
-Remember to replace the API key in the `apiKey` parameter with the provided public test API key.
-
-Make sure to replace the EC2 instance hostname in the cURL command with the actual hostname of your EC2 instance.
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
