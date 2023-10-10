@@ -63,7 +63,6 @@ Swagger UI provides a visual interface for interacting with the API. It automati
 ## Caching
 
 Caching is implemented using the Caffeine library. The cache is set to have an initial capacity of 100 and a maximum size of 500. Cached values expire after 1 hour of access.
-Certainly, here's the updated section with the public test API key and the cURL command for testing on EC2:
 
 ## Authentication
 
